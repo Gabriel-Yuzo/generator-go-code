@@ -1,0 +1,11 @@
+package repository
+
+import "generator-go-code/internal/domain/models"
+
+type {{.Entity}}Repository interface {
+	Save({{.Entity}} *models.{{.Entity}}) error
+	FindByID(id int) (*models.{{.Entity}}, error)
+	FindAll() ([]*models.{{.Entity}}, error)
+	Update({{.Entity}} *models.{{.Entity}}) error
+	Delete(id int) error
+}

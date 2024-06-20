@@ -1,0 +1,40 @@
+package usecase
+
+import "generator-go-code/internal/domain/models"
+import "generator-go-code/internal/domain/repository"
+
+type {{.Entity}}Usecase interface {
+	Create{{.Entity}}({{.Entity}} *models.{{.Entity}}) error
+	Get{{.Entity}}ByID(id int) (*models.{{.Entity}}, error)
+	GetAll{{.Entity}}s() ([]*models.{{.Entity}}, error)
+	Update{{.Entity}}({{.Entity}} *models.{{.Entity}}) error
+	Delete{{.Entity}}(id int) error
+}
+
+type {{.Entity}}UsecaseImpl struct {
+	repo repository.{{.Entity}}Repository
+}
+
+func New{{.Entity}}UsecaseImpl(repo repository.{{.Entity}}Repository) *{{.Entity}}UsecaseImpl {
+	return &{{.Entity}}UsecaseImpl{repo: repo}
+}
+
+func (u *{{.Entity}}UsecaseImpl) Create{{.Entity}}({{.Entity}} *models.{{.Entity}}) error {
+	return u.repo.Save({{.Entity}})
+}
+
+func (u *{{.Entity}}UsecaseImpl) Get{{.Entity}}ByID(id int) (*models.{{.Entity}}, error) {
+	return u.repo.FindByID(id)
+}
+
+func (u *{{.Entity}}UsecaseImpl) GetAll{{.Entity}}s() ([]*models.{{.Entity}}, error) {
+	return u.repo.FindAll()
+}
+
+func (u *{{.Entity}}UsecaseImpl) Update{{.Entity}}({{.Entity}} *models.{{.Entity}}) error {
+	return u.repo.Update({{.Entity}})
+}
+
+func (u *{{.Entity}}UsecaseImpl) Delete{{.Entity}}(id int) error {
+	return u.repo.Delete(id)
+}

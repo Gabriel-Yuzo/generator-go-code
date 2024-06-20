@@ -1,0 +1,91 @@
+package handler
+
+import (
+	"net/http"
+	"generator-go-code/internal/domain/models"
+	"generator-go-code/internal/usecase"
+	"encoding/json"
+	"strconv"
+	"github.com/gorilla/mux"
+)
+
+type {{.Entity}}Handler struct {
+	usecase usecase.{{.Entity}}Usecase
+}
+
+func New{{.Entity}}Handler(usecase usecase.{{.Entity}}Usecase) *{{.Entity}}Handler {
+	return &{{.Entity}}Handler{usecase: usecase}
+}
+
+func (h *{{.Entity}}Handler) Create{{.Entity}}(w http.ResponseWriter, r *http.Request) {
+	var {{.Entity}} models.{{.Entity}}
+	if err := json.NewDecoder(r.Body).Decode(&{{.Entity}}); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if err := h.usecase.Create{{.Entity}}(&{{.Entity}}); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+}
+
+func (h *{{.Entity}}Handler) Get{{.Entity}}ByID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	{{.Entity}}, err := h.usecase.Get{{.Entity}}ByID(id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	json.NewEncoder(w).Encode({{.Entity}})
+}
+
+func (h *{{.Entity}}Handler) GetAll{{.Entity}}s(w http.ResponseWriter, r *http.Request) {
+	{{.Entity}}s, err := h.usecase.GetAll{{.Entity}}s()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode({{.Entity}}s)
+}
+
+func (h *{{.Entity}}Handler) Update{{.Entity}}(w http.ResponseWriter, r *http.Request) {
+	var {{.Entity}} models.{{.Entity}}
+	if err := json.NewDecoder(r.Body).Decode(&{{.Entity}}); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if err := h.usecase.Update{{.Entity}}(&{{.Entity}}); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
+func (h *{{.Entity}}Handler) Delete{{.Entity}}(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if err := h.usecase.Delete{{.Entity}}(id); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}

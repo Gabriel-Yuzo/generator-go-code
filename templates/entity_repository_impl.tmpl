@@ -1,0 +1,44 @@
+package repository
+
+import (
+	"gorm.io/gorm"
+	"{{$.Projeto}}/internal/domain/models"
+)
+
+type {{.Entity}}RepositoryImpl struct {
+	db *gorm.DB
+}
+
+func New{{.Entity}}RepositoryImpl(db *gorm.DB) *{{.Entity}}RepositoryImpl {
+	return &{{.Entity}}RepositoryImpl{db: db}
+}
+
+func (r *{{.Entity}}RepositoryImpl) Save({{.Entity}} *models.{{.Entity}}) error {
+	return r.db.Create({{.Entity}}).Error
+}
+
+func (r *{{.Entity}}RepositoryImpl) FindByID(id int) (*models.{{.Entity}}, error) {
+	var {{.Entity}} models.{{.Entity}}
+	err := r.db.First(&{{.Entity}}, id).Error
+	if err != nil {
+		return nil, err
+	}
+	return &{{.Entity}}, nil
+}
+
+func (r *{{.Entity}}RepositoryImpl) FindAll() ([]*models.{{.Entity}}, error) {
+	var {{.Entity}}s []*models.{{.Entity}}
+	err := r.db.Find(&{{.Entity}}s).Error
+	if err != nil {
+		return nil, err
+	}
+	return {{.Entity}}s, nil
+}
+
+func (r *{{.Entity}}RepositoryImpl) Update({{.Entity}} *models.{{.Entity}}) error {
+	return r.db.Save({{.Entity}}).Error
+}
+
+func (r *{{.Entity}}RepositoryImpl) Delete(id int) error {
+	return r.db.Delete(&models.{{.Entity}}, id).Error
+}
