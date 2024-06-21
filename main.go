@@ -15,7 +15,7 @@ var estrutura = map[string][]string{
 	"internal/repository":        {"{{.Entity | ToLower}}_repository_impl.go"},
 	"internal/usecase":           {"{{.Entity | ToLower}}_usecase.go"},
 	"internal/server/handler":    {"{{.Entity | ToLower}}_handler.go"},
-	"internal/server/routes":     {"{{.Entity | ToLower}}_handler.go"},
+	"internal/server/routes":     {"{{.Entity | ToLower}}_routes.go"},
 }
 
 // Campo da entidade
@@ -75,7 +75,7 @@ func gerarArquivos(entidade string, fields []Field) {
 		"internal/repository/{{.Entity | ToLower}}_repository_impl.go":   "templates/entity_repository_impl.tmpl",
 		"internal/usecase/{{.Entity | ToLower}}_usecase.go":              "templates/entity_usecase.tmpl",
 		"internal/server/handler/{{.Entity | ToLower}}_handler.go":       "templates/entity_handler.tmpl",
-		"internal/server/routes/{{.Entity | ToLower}}route.go":           "templates/entity_handler.tmpl",
+		"internal/server/routes/{{.Entity | ToLower}}_routes.go":         "templates/entity_routes.tmpl",
 	}
 
 	for pathTemplate, tmpl := range templates {
@@ -113,11 +113,21 @@ func processFileName(fileTemplate, entidade string) (string, error) {
 
 // Função auxiliar para criar arquivos com templates
 func createFileWithTemplate(path, tmpl, entidade string, fields []Field) {
-	t, err := template.ParseFiles(tmpl)
+	t := template.New(filepath.Base(tmpl)).Funcs(template.FuncMap{
+		"ToLower": strings.ToLower,
+	})
+
+	t, err := t.ParseFiles(tmpl)
 	if err != nil {
 		fmt.Printf("Erro ao parsear template %s: %s\n", tmpl, err)
 		return
 	}
+
+	t.Funcs(
+		template.FuncMap{
+			"ToLower": strings.ToLower,
+		},
+	).ParseFiles(tmpl)
 
 	f, err := os.Create(path)
 	if err != nil {

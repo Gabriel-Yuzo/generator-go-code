@@ -1,0 +1,14 @@
+package routes
+
+import (
+    "generator-go-code/internal/server/handler"
+    "github.com/labstack/echo/v4"
+)
+
+func Setup{{.Entity}}Routes(e *echo.Echo, {{.Entity}}Handler *handler.{{.Entity}}Handler) {
+    e.POST("/{{.Entity | ToLower}}", {{.Entity}}Handler.Create{{.Entity}})
+    e.GET("/{{.Entity | ToLower}}/list", {{.Entity}}Handler.GetAll{{.Entity}}s)
+    e.GET("/{{.Entity | ToLower}}/:id", {{.Entity}}Handler.Get{{.Entity}}ByID)
+    e.PUT("/{{.Entity | ToLower}}/:id", {{.Entity}}Handler.Update{{.Entity}})
+    e.DELETE("/{{.Entity | ToLower}}/:id", {{.Entity}}Handler.Delete{{.Entity}})
+}

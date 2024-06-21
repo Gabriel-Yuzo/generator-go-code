@@ -4,9 +4,8 @@ import (
 	"net/http"
 	"generator-go-code/internal/domain/models"
 	"generator-go-code/internal/usecase"
-	"encoding/json"
 	"strconv"
-	"github.com/gorilla/mux"
+	"github.com/labstack/echo/v4"
 )
 
 type {{.Entity}}Handler struct {
@@ -17,75 +16,64 @@ func New{{.Entity}}Handler(usecase usecase.{{.Entity}}Usecase) *{{.Entity}}Handl
 	return &{{.Entity}}Handler{usecase: usecase}
 }
 
-func (h *{{.Entity}}Handler) Create{{.Entity}}(w http.ResponseWriter, r *http.Request) {
-	var {{.Entity}} models.{{.Entity}}
-	if err := json.NewDecoder(r.Body).Decode(&{{.Entity}}); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+func (h *{{.Entity}}Handler) Create{{.Entity}}(c echo.Context) error {
+	var {{.Entity | ToLower}} models.{{.Entity}}
+	if err := c.Bind(&{{.Entity | ToLower}}); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	if err := h.usecase.Create{{.Entity}}(&{{.Entity}}); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+	if err := h.usecase.Create{{.Entity}}(&{{.Entity | ToLower}}); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	w.WriteHeader(http.StatusCreated)
+	return c.JSON(http.StatusCreated, {{.Entity | ToLower}})
 }
 
-func (h *{{.Entity}}Handler) Get{{.Entity}}ByID(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
+func (h *{{.Entity}}Handler) Get{{.Entity}}ByID(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	{{.Entity}}, err := h.usecase.Get{{.Entity}}ByID(id)
+	{{.Entity | ToLower}}, err := h.usecase.Get{{.Entity}}ByID(id)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
+		return echo.NewHTTPError(http.StatusNotFound, err.Error())
 	}
 
-	json.NewEncoder(w).Encode({{.Entity}})
+	return c.JSON(http.StatusOK, {{.Entity | ToLower}})
 }
 
-func (h *{{.Entity}}Handler) GetAll{{.Entity}}s(w http.ResponseWriter, r *http.Request) {
-	{{.Entity}}s, err := h.usecase.GetAll{{.Entity}}s()
+func (h *{{.Entity}}Handler) GetAll{{.Entity}}s(c echo.Context) error {
+	{{.Entity | ToLower}}s, err := h.usecase.GetAll{{.Entity}}s()
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	json.NewEncoder(w).Encode({{.Entity}}s)
+	return c.JSON(http.StatusOK, {{.Entity | ToLower}}s)
 }
 
-func (h *{{.Entity}}Handler) Update{{.Entity}}(w http.ResponseWriter, r *http.Request) {
-	var {{.Entity}} models.{{.Entity}}
-	if err := json.NewDecoder(r.Body).Decode(&{{.Entity}}); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+func (h *{{.Entity}}Handler) Update{{.Entity}}(c echo.Context) error {
+	var {{.Entity | ToLower}} models.{{.Entity}}
+	if err := c.Bind(&{{.Entity | ToLower}}); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	if err := h.usecase.Update{{.Entity}}(&{{.Entity}}); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+	if err := h.usecase.Update{{.Entity}}(&{{.Entity | ToLower}}); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	w.WriteHeader(http.StatusOK)
+	return c.NoContent(http.StatusOK)
 }
 
-func (h *{{.Entity}}Handler) Delete{{.Entity}}(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
+func (h *{{.Entity}}Handler) Delete{{.Entity}}(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
 	if err := h.usecase.Delete{{.Entity}}(id); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	w.WriteHeader(http.StatusNoContent)
+	return c.NoContent(http.StatusNoContent)
 }
