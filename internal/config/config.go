@@ -27,6 +27,7 @@ type DatabaseConfig struct {
 var AppConfig *Config
 
 func InitConfig() {
+
 	configFile, err := os.Open("config.yaml")
 	if err != nil {
 		log.Fatalf("Failed to open config file: %v", err)

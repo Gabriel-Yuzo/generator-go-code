@@ -4,20 +4,18 @@ import (
 	"generator-go-code/internal/config"
 	"generator-go-code/internal/database"
 	"log"
-	"net/http"
 
-	"github.com/gorilla/mux"
+	"github.com/labstack/echo/v4"
 )
 
 func main() {
 	config.InitConfig()
 	database.Init()
 
-	r := mux.NewRouter()
-	// Adicione suas rotas aqui
+	e := echo.New()
 
 	log.Printf("Starting server on port %s...", config.AppConfig.Server.Port)
-	if err := http.ListenAndServe(":"+config.AppConfig.Server.Port, r); err != nil {
+	if err := e.Start(":" + config.AppConfig.Server.Port); err != nil {
 		log.Fatalf("Could not start server: %v", err)
 	}
 }

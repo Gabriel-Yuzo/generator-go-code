@@ -40,5 +40,5 @@ func (r *{{.Entity}}RepositoryImpl) Update({{.Entity}} *models.{{.Entity}}) erro
 }
 
 func (r *{{.Entity}}RepositoryImpl) Delete(id int) error {
-	return r.db.Delete(&models.{{.Entity}}, id).Error
+	return r.db.Delete(id).Error
 }

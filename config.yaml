@@ -2,8 +2,8 @@ server:
   port: "8080"
 
 database:
-  user: "postgres"
-  password: "postgres"
+  user: "root"
+  password: "Teste123@mysql"
   host: "localhost"
   port: "3306"
-  name: "postgres"
+  name: "public"

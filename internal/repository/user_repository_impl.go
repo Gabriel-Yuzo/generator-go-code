@@ -1,8 +1,9 @@
 package repository
 
 import (
-	"gorm.io/gorm"
 	"generator-go-code/internal/domain/models"
+
+	"gorm.io/gorm"
 )
 
 type UserRepositoryImpl struct {
@@ -40,5 +41,5 @@ func (r *UserRepositoryImpl) Update(User *models.User) error {
 }
 
 func (r *UserRepositoryImpl) Delete(id int) error {
-	return r.db.Delete(&models.User, id).Error
+	return r.db.Delete(id).Error
 }
